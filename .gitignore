@@ -1,0 +1,9 @@
+# Prevent ISO files and boxes from being tracked.
+iso/*.iso
+*.box
+packer/output-virtualbox-iso/
+packer/packer_cache/*
+packer/builds
+vagrant/.vagrant
+
+.DS_Store

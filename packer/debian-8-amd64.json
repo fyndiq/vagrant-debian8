@@ -1,0 +1,45 @@
+{
+  "builders": [{
+    "type": "virtualbox-iso",
+    "guest_os_type": "Debian_64",
+    "iso_url": "{{user `mirror`}}/current/amd64/iso-cd/debian-8.4.0-amd64-netinst.iso",
+    "iso_checksum": "7a6b418e6a4ee3ca75dda04d79ed96c9e2c33bb0c703ca7e40c6374ab4590748",
+    "iso_checksum_type": "sha256",
+    "vm_name": "packer-debian-8-amd64",
+    "disk_size": "{{user `disk_size`}}",
+    "headless": "{{user `headless`}}",
+    "http_directory": "http",
+    "boot_wait": "5s",
+    "boot_command": [
+      "<esc><wait>",
+      "auto ",
+      "preseed/url=http://{{.HTTPIP}}:{{.HTTPPort}}/debian-8-amd64/preseed.cfg ",
+      "<enter>"
+    ],
+    "ssh_wait_timeout": "60m",
+    "ssh_username": "vagrant",
+    "ssh_password": "vagrant",
+    "shutdown_command": "echo 'vagrant' | sudo -S /sbin/shutdown -hP now"
+  }],
+  "provisioners": [{
+    "type": "shell",
+    "execute_command": "echo 'vagrant' | {{.Vars}} sudo -E -S bash '{{.Path}}'",
+    "scripts": [
+      "scripts/virtualbox.sh",
+      "scripts/vagrant.sh",
+      "scripts/sshd.sh",
+      "scripts/cleanup.sh"
+    ]
+  }],
+  "post-processors": [{
+    "type": "vagrant",
+    "compression_level": "{{user `compression_level`}}",
+    "output": "build/debian-8-amd64.box"
+  }],
+  "variables": {
+    "compression_level": "9",
+    "disk_size": "20000",
+    "headless": "false",
+    "mirror": "http://cdimage.debian.org/debian-cd"
+  }
+}
